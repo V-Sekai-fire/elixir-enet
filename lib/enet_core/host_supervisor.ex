@@ -1,0 +1,71 @@
+defmodule EnetCore.HostSupervisor do
+  @moduledoc """
+  ENet host supervisor.
+  Converted from enet_host_sup.erl.
+  """
+
+  use Supervisor
+  require Logger
+
+  ## API
+
+  @spec start_link(integer(), function() | mfa(), keyword()) :: Supervisor.on_start()
+  def start_link(host_id, connect_fun, options) do
+    Supervisor.start_link(__MODULE__, [host_id, connect_fun, options])
+  end
+
+  ## Supervisor callbacks
+
+  @impl true
+  def init([host_id, connect_fun, options]) do
+    sup_flags = %{
+      strategy: :one_for_one,
+      intensity: 1,
+      period: 5
+    }
+
+    peer_limit =
+      case Keyword.get(options, :peer_limit) do
+        nil -> 1
+        limit -> limit
+      end
+
+    pool = %{
+      id: EnetCore.Pool,
+      start: {EnetCore.Pool, :start_link, [host_id, peer_limit]},
+      restart: :permanent,
+      shutdown: 2000,
+      type: :worker,
+      modules: [EnetCore.Pool]
+    }
+
+    host = %{
+      id: EnetCore.Host,
+      start: {EnetCore.Host, :start_link, [host_id, connect_fun, options]},
+      restart: :permanent,
+      shutdown: 2000,
+      type: :worker,
+      modules: [EnetCore.Host]
+    }
+
+    disconnector = %{
+      id: EnetCore.Disconnector,
+      start: {EnetCore.Disconnector, :start_link, [host_id]},
+      restart: :permanent,
+      shutdown: 1000,
+      type: :worker,
+      modules: [EnetCore.Disconnector]
+    }
+
+    peer_sup = %{
+      id: EnetCore.PeerSupervisor,
+      start: {EnetCore.PeerSupervisor, :start_link, [host_id]},
+      restart: :permanent,
+      shutdown: :infinity,
+      type: :supervisor,
+      modules: [EnetCore.PeerSupervisor]
+    }
+
+    {:ok, {sup_flags, [pool, host, disconnector, peer_sup]}}
+  end
+end
