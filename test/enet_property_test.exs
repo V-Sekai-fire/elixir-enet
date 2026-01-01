@@ -1,8 +1,8 @@
 defmodule EnetCore.PropertyTest do
   @moduledoc """
-  Property-based tests for EnetCore using PropCheck.
+  Property-based tests for Enet using PropCheck.
   
-  These tests use property-based testing to verify EnetCore behavior across
+  These tests use property-based testing to verify Enet behavior across
   many randomly generated sequences of operations.
   """
 

@@ -1,9 +1,9 @@
 defmodule EnetCore.Model do
   @moduledoc """
-  PropCheck state machine model for EnetCore property-based testing.
+  PropCheck state machine model for Enet property-based testing.
   
   This module implements the proper_statem behaviour to define a state machine
-  model that mirrors the EnetCore API behavior for property-based testing.
+  model that mirrors the Enet API behavior for property-based testing.
   """
 
   @behaviour :proper_statem

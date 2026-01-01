@@ -1,6 +1,8 @@
-# EnetCore
+# Enet
 
 **TODO: Add description**
+
+Repository: [https://github.com/V-Sekai-fire/elixir-enet](https://github.com/V-Sekai-fire/elixir-enet)
 
 ## Acknowledgments
 

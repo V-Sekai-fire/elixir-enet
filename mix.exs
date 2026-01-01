@@ -8,6 +8,8 @@ defmodule EnetCore.MixProject do
       elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
       authors: ["K. S. Ernest (iFire) Lee <ernest.lee@chibifire.com>"],
+      source_url: "https://github.com/V-Sekai-fire/elixir-enet",
+      homepage_url: "https://github.com/V-Sekai-fire/elixir-enet",
       test_paths: ["test"],
       erlc_paths: if(Mix.env() == :test, do: ["test"], else: []),
       test_ignore_filters: [~r/\.ex$/],
