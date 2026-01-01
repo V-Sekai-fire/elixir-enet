@@ -4,7 +4,6 @@ defmodule EnetCore.ProtocolDecoder do
   Converted from enet_protocol_decode.erl.
   """
 
-  alias EnetCore.Commands
   alias EnetCore.Protocol
 
   ## Protocol Header

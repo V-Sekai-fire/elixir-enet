@@ -208,7 +208,7 @@ defmodule EnetCore.Peer do
 
   ## Connecting state
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connecting(:enter, _old_state, state) do
     # Sending the initial Connect command.
     %__MODULE__{
@@ -308,7 +308,7 @@ defmodule EnetCore.Peer do
     {:keep_state, new_state, [connect_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connecting(:cast, {:incoming_command, {h, %Protocol.Acknowledge{} = c}}, state) do
     # Received an Acknowledge command in the 'connecting' state.
     # - Verify that the acknowledge is correct
@@ -324,7 +324,7 @@ defmodule EnetCore.Peer do
     {:next_state, :acknowledging_verify_connect, state, [canceled_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connecting(:cast, {:incoming_command, {h, %Protocol.VerifyConnect{} = c}}, state) do
     # cancel the CONNECT retry
     %__MODULE__{connect_timer_id: connect_timer_id} = state
@@ -337,25 +337,25 @@ defmodule EnetCore.Peer do
      [{:next_event, :cast, {:incoming_command, {h, c}}}, canceled_timeout]}
   end
 
-  @impl :gen_statem
+  # Timeout handler with custom pattern - not a standard gen_statem callback, so no @impl
   def connecting({:timeout, {_channel_id, _sent_time, _sequence_number}}, _data, _state) do
     Logger.debug("connection timeout")
     {:stop, :timeout}
   end
 
-  @impl :gen_statem
+  # Catch-all handler - not a gen_statem callback, so no @impl
   def connecting(event_type, event_content, state) do
     handle_event(event_type, event_content, state)
   end
 
   ## Acknowledging Connect state
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def acknowledging_connect(:enter, _old_state, state) do
     {:keep_state, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def acknowledging_connect(:cast, {:incoming_command, {_h, %Protocol.Connect{} = c}}, state) do
     # Received a Connect command.
     # - Verify that the data is sane (TODO)
@@ -431,25 +431,25 @@ defmodule EnetCore.Peer do
     {:next_state, :verifying_connect, new_state, [verify_connect_timeout]}
   end
 
-  @impl :gen_statem
+  # Timeout handler with custom pattern - not a standard gen_statem callback, so no @impl
   def acknowledging_connect({:timeout, {_channel_id, _sent_time, _sequence_nr}}, _data, _state) do
     Logger.debug("acknowledgment timeout")
     {:stop, :timeout}
   end
 
-  @impl :gen_statem
+  # Catch-all handler - not a gen_statem callback, so no @impl
   def acknowledging_connect(event_type, event_content, state) do
     handle_event(event_type, event_content, state)
   end
 
   ## Acknowledging Verify Connect state
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def acknowledging_verify_connect(:enter, _old_state, state) do
     {:keep_state, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def acknowledging_verify_connect(
         :cast,
         {:incoming_command, {_h, %Protocol.VerifyConnect{} = c}},
@@ -493,19 +493,19 @@ defmodule EnetCore.Peer do
     end
   end
 
-  @impl :gen_statem
+  # Catch-all handler - not a gen_statem callback, so no @impl
   def acknowledging_verify_connect(event_type, event_content, state) do
     handle_event(event_type, event_content, state)
   end
 
   ## Verifying Connect state
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def verifying_connect(:enter, _old_state, state) do
     {:keep_state, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def verifying_connect(:cast, {:incoming_command, {h, %Protocol.Acknowledge{} = c}}, state) do
     # Received an Acknowledge command in the 'verifying_connect' state.
     # - Verify that the acknowledge is correct
@@ -522,14 +522,14 @@ defmodule EnetCore.Peer do
     {:next_state, :connected, state, [canceled_timeout]}
   end
 
-  @impl :gen_statem
+  # Catch-all handler - not a gen_statem callback, so no @impl
   def verifying_connect(event_type, event_content, state) do
     handle_event(event_type, event_content, state)
   end
 
   ## Connected state
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:enter, _old_state, state) do
     %__MODULE__{
       local_port: local_port,
@@ -579,7 +579,7 @@ defmodule EnetCore.Peer do
     end
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {_h, %Protocol.Ping{}}}, state) do
     # Received PING.
     # - Reset the receive-timer
@@ -587,7 +587,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {h, %Protocol.Acknowledge{} = c}}, state) do
     # Received an Acknowledge command.
     # - Verify that the acknowledge is correct
@@ -604,7 +604,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [canceled_timeout, recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {_h, %Protocol.BandwidthLimit{} = c}}, state) do
     # Received Bandwidth Limit command.
     # - Set bandwidth limit
@@ -637,7 +637,7 @@ defmodule EnetCore.Peer do
     {:keep_state, new_state, [recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {_h, %Protocol.ThrottleConfigure{} = c}}, state) do
     # Received Throttle Configure command.
     # - Set throttle configuration
@@ -659,7 +659,7 @@ defmodule EnetCore.Peer do
     {:keep_state, new_state, [recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {h, %Protocol.Unsequenced{} = c}}, state) do
     # Received Send Unsequenced command.
     # - Forward the command to the relevant channel
@@ -672,7 +672,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {h, %Protocol.Unreliable{} = c}}, state) do
     # Received Send Unreliable command.
     # - Forward the command to the relevant channel
@@ -685,7 +685,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {h, %Protocol.Reliable{} = c}}, state) do
     # Received Send Reliable command.
     # - Forward the command to the relevant channel
@@ -698,7 +698,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [recv_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:incoming_command, {_h, %Protocol.Disconnect{}}}, state) do
     # Received Disconnect command.
     # - Notify worker application
@@ -717,7 +717,7 @@ defmodule EnetCore.Peer do
     {:stop, :normal, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:outgoing_command, {h, %Protocol.Unsequenced{} = c}}, state) do
     # Sending an Unsequenced, unreliable command.
     %__MODULE__{
@@ -739,7 +739,7 @@ defmodule EnetCore.Peer do
     {:keep_state, new_state, [send_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:outgoing_command, {h, %Protocol.Unreliable{} = c}}, state) do
     # Sending a Sequenced, unreliable command.
     %__MODULE__{
@@ -758,7 +758,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [send_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, {:outgoing_command, {h, %Protocol.Reliable{} = c}}, state) do
     # Sending a Sequenced, reliable command.
     %__MODULE__{
@@ -786,7 +786,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [send_reliable_timeout, send_timeout]}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:info, {:enet, channel_id, c}, state) do
     # Received a message from a channel.
     %__MODULE__{worker: worker} = state
@@ -800,7 +800,7 @@ defmodule EnetCore.Peer do
     end
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, :disconnect, state) do
     # Disconnecting.
     %__MODULE__{
@@ -819,13 +819,13 @@ defmodule EnetCore.Peer do
     {:next_state, :disconnecting, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def connected(:cast, :disconnect_now, _state) do
     # Disconnecting immediately.
     {:stop, :normal}
   end
 
-  @impl :gen_statem
+  # Timeout handler with custom pattern - not a standard gen_statem callback, so no @impl
   def connected({:timeout, {channel_id, sent_time, sequence_nr}}, data, state) do
     # A resend-timer was triggered.
     %__MODULE__{
@@ -844,7 +844,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [new_timeout, send_timeout]}
   end
 
-  @impl :gen_statem
+  # Timeout handler with custom pattern - not a standard gen_statem callback, so no @impl
   def connected({:timeout, :recv}, :ping, state) do
     # The receive-timer was triggered.
     %__MODULE__{
@@ -857,7 +857,7 @@ defmodule EnetCore.Peer do
     {:stop, :normal, state}
   end
 
-  @impl :gen_statem
+  # Timeout handler with custom pattern - not a standard gen_statem callback, so no @impl
   def connected({:timeout, :send}, :ping, state) do
     # The send-timer was triggered.
     %__MODULE__{
@@ -877,14 +877,14 @@ defmodule EnetCore.Peer do
     {:keep_state, state, [send_timeout]}
   end
 
-  @impl :gen_statem
+  # Catch-all handler - not a gen_statem callback, so no @impl
   def connected(event_type, event_content, state) do
     handle_event(event_type, event_content, state)
   end
 
   ## Disconnecting state
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def disconnecting(:enter, _old_state, state) do
     %__MODULE__{
       local_port: local_port,
@@ -897,7 +897,7 @@ defmodule EnetCore.Peer do
     {:keep_state, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def disconnecting(:cast, {:incoming_command, {_h, %Protocol.Acknowledge{}}}, state) do
     # Received an Acknowledge command in the 'disconnecting' state.
     %__MODULE__{
@@ -909,12 +909,12 @@ defmodule EnetCore.Peer do
     {:stop, :normal, state}
   end
 
-  @impl :gen_statem
+  # State callback - not a standard gen_statem callback, so no @impl
   def disconnecting(:cast, {:incoming_command, {_h, _c}}, state) do
     {:keep_state, state}
   end
 
-  @impl :gen_statem
+  # Catch-all handler - not a gen_statem callback, so no @impl
   def disconnecting(event_type, event_content, state) do
     handle_event(event_type, event_content, state)
   end
