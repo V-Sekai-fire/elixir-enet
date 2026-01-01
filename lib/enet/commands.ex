@@ -1,4 +1,4 @@
-defmodule EnetCore.Commands do
+defmodule Enet.Commands do
   @moduledoc """
   ENet command type constants.
   Converted from enet_commands.hrl.

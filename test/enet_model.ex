@@ -1,4 +1,4 @@
-defmodule EnetCore.Model do
+defmodule Enet.Model do
   @moduledoc """
   PropCheck state machine model for Enet property-based testing.
   
@@ -8,8 +8,8 @@ defmodule EnetCore.Model do
 
   @behaviour :proper_statem
 
-  alias EnetCore.Peer
-  alias EnetCore.Sync
+  alias Enet.Peer
+  alias Enet.Sync
 
   defstruct hosts: []
 

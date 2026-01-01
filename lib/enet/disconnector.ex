@@ -1,4 +1,4 @@
-defmodule EnetCore.Disconnector do
+defmodule Enet.Disconnector do
   @moduledoc """
   ENet peer disconnection management.
   Converted from enet_disconnector.erl.
@@ -7,9 +7,9 @@ defmodule EnetCore.Disconnector do
   use GenServer
   require Logger
 
-  alias EnetCore.Command
-  alias EnetCore.Host
-  alias EnetCore.ProtocolEncoder
+  alias Enet.Command
+  alias Enet.Host
+  alias Enet.ProtocolEncoder
 
   defstruct [:port]
 

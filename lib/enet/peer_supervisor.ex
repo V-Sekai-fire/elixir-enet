@@ -1,4 +1,4 @@
-defmodule EnetCore.PeerSupervisor do
+defmodule Enet.PeerSupervisor do
   @moduledoc """
   ENet peer supervisor.
   Converted from enet_peer_sup.erl.
@@ -14,7 +14,7 @@ defmodule EnetCore.PeerSupervisor do
     Supervisor.start_link(__MODULE__, [host_id])
   end
 
-  @spec start_peer(Supervisor.supervisor(), EnetCore.PeerRecord.t()) ::
+  @spec start_peer(Supervisor.supervisor(), Enet.PeerRecord.t()) ::
           {:ok, pid()} | {:error, term()}
   def start_peer(supervisor, peer) do
     Supervisor.start_child(supervisor, [peer])
@@ -34,12 +34,12 @@ defmodule EnetCore.PeerSupervisor do
 
     child_specs = [
       %{
-        id: EnetCore.Peer,
-        start: {EnetCore.Peer, :start_link, [host_id]},
+        id: Enet.Peer,
+        start: {Enet.Peer, :start_link, [host_id]},
         restart: :temporary,
         shutdown: :brutal_kill,
         type: :worker,
-        modules: [EnetCore.Peer]
+        modules: [Enet.Peer]
       }
     ]
 

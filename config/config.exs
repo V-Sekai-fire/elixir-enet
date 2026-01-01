@@ -7,7 +7,7 @@
 import Config
 
 # Configures the application
-config :enet_core,
+config :enet,
   # Add application-specific configuration here
   []
 

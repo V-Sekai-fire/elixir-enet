@@ -9,24 +9,24 @@
 }).
 
 prop_sync_loopback() ->
-    application:ensure_all_started(enet_core),
+    application:ensure_all_started(enet),
     application:ensure_all_started(gproc),
     ?FORALL(
         Commands,
-        commands(enet_core_model),
+        commands(enet_model),
         ?WHENFAIL(
             pretty_print_commands(Commands),
             ?TRAPEXIT(
                 begin
-                    {History, S, Res} = run_commands(enet_core_model, Commands),
+                    {History, S, Res} = run_commands(enet_model, Commands),
                     lists:foreach(
                         fun(#{port := Port}) ->
-                            case enet_core_sync:stop_host(Port) of
+                            case enet_sync:stop_host(Port) of
                                 ok ->
                                     ok;
                                 {error, Reason} ->
                                     io:format(
-                                        "\n\nCleanup error: enet_core_sync:stop_host/1: ~p\n\n",
+                                        "\n\nCleanup error: enet_sync:stop_host/1: ~p\n\n",
                                         [Reason]
                                     )
                             end

@@ -1,4 +1,4 @@
-defmodule EnetCore.Host do
+defmodule Enet.Host do
   @moduledoc """
   ENet host gen_server.
   Converted from enet_host.erl.
@@ -8,14 +8,14 @@ defmodule EnetCore.Host do
   require Logger
   import Bitwise
 
-  alias EnetCore.Constants
-  alias EnetCore.Peer
-  alias EnetCore.PeerRecord
-  alias EnetCore.PeerSupervisor
-  alias EnetCore.Pool
-  alias EnetCore.Protocol
-  alias EnetCore.ProtocolDecoder
-  alias EnetCore.ProtocolEncoder
+  alias Enet.Constants
+  alias Enet.Peer
+  alias Enet.PeerRecord
+  alias Enet.PeerSupervisor
+  alias Enet.Pool
+  alias Enet.Protocol
+  alias Enet.ProtocolDecoder
+  alias Enet.ProtocolEncoder
 
   defstruct [
     :transport,

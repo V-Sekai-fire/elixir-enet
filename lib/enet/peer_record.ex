@@ -1,4 +1,4 @@
-defmodule EnetCore.PeerRecord do
+defmodule Enet.PeerRecord do
   @moduledoc """
   ENet peer record structure.
   Converted from enet_peer.hrl.

@@ -1,10 +1,10 @@
-defmodule EnetCore.ProtocolDecoder do
+defmodule Enet.ProtocolDecoder do
   @moduledoc """
   ENet protocol decoding.
   Converted from enet_protocol_decode.erl.
   """
 
-  alias EnetCore.Protocol
+  alias Enet.Protocol
 
   ## Protocol Header
 

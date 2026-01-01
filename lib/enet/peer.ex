@@ -1,4 +1,4 @@
-defmodule EnetCore.Peer do
+defmodule Enet.Peer do
   @moduledoc """
   ENet peer gen_statem.
   Converted from enet_peer.erl.
@@ -15,16 +15,16 @@ defmodule EnetCore.Peer do
   @behaviour :gen_statem
   require Logger
 
-  alias EnetCore.Channel
-  alias EnetCore.Command
-  alias EnetCore.Constants
-  alias EnetCore.Disconnector
-  alias EnetCore.Host
-  alias EnetCore.PeerRecord
-  alias EnetCore.Pool
-  alias EnetCore.Protocol
-  alias EnetCore.ProtocolDecoder
-  alias EnetCore.ProtocolEncoder
+  alias Enet.Channel
+  alias Enet.Command
+  alias Enet.Constants
+  alias Enet.Disconnector
+  alias Enet.Host
+  alias Enet.PeerRecord
+  alias Enet.Pool
+  alias Enet.Protocol
+  alias Enet.ProtocolDecoder
+  alias Enet.ProtocolEncoder
 
   defstruct [
     :local_port,

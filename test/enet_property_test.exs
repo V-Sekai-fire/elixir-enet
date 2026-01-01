@@ -1,4 +1,4 @@
-defmodule EnetCore.PropertyTest do
+defmodule Enet.PropertyTest do
   @moduledoc """
   Property-based tests for Enet using PropCheck.
   
@@ -11,7 +11,7 @@ defmodule EnetCore.PropertyTest do
 
   setup do
     # Ensure ENet application is started
-    {:ok, _} = Application.ensure_all_started(:enet_core)
+    {:ok, _} = Application.ensure_all_started(:enet)
     {:ok, _} = Application.ensure_all_started(:gproc)
 
     on_exit(fn ->

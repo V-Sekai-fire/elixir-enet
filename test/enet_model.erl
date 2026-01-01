@@ -1,4 +1,4 @@
--module(enet_core_model).
+-module(enet_model).
 -behaviour(proper_statem).
 
 -include_lib("proper/include/proper.hrl").
@@ -35,16 +35,16 @@ initial_state() ->
 %%% Commands
 
 command(#state{hosts = []}) ->
-    {call, enet_core_sync, start_host, [connect_fun(), host_options()]};
+    {call, enet_sync, start_host, [connect_fun(), host_options()]};
 command(S) ->
     AlwaysPossibleCommands =
         [
-            {call, enet_core_sync, start_host, [connect_fun(), host_options()]},
+            {call, enet_sync, start_host, [connect_fun(), host_options()]},
 
             ?LET(
                 #{port := Port},
                 started_host(S),
-                {call, enet_core_sync, stop_host, [Port]}
+                {call, enet_sync, stop_host, [Port]}
             ),
 
             connect_command(S)
@@ -67,19 +67,19 @@ command(S) ->
                                     P = #peer{connect_id = C} <- HostPeers,
                                     C =:= ConnectID
                                 ],
-                            {call, enet_core_sync, disconnect, [LPid, RPid]}
+                            {call, enet_sync, disconnect, [LPid, RPid]}
                         end
                     ),
 
-                    {call, enet_core_sync, send_unsequenced, [
+                    {call, enet_sync, send_unsequenced, [
                         channel_pid(S), message_data()
                     ]},
 
-                    {call, enet_core_sync, send_unreliable, [
+                    {call, enet_sync, send_unreliable, [
                         channel_pid(S), message_data()
                     ]},
 
-                    {call, enet_core_sync, send_reliable, [
+                    {call, enet_sync, send_reliable, [
                         channel_pid(S), message_data()
                     ]}
                 ]
@@ -102,26 +102,26 @@ connect_command(S) ->
             #{port := RPort, peer_limit := RPL, peer_count := RPC} = R,
             if
                 LPL =:= LPC ->
-                    {call, enet_core_sync, connect_from_full_local_host, [
+                    {call, enet_sync, connect_from_full_local_host, [
                         LPort, RPort, ChannelCount
                     ]};
                 RPL =:= RPC ->
-                    {call, enet_core_sync, connect_to_full_remote_host, [
+                    {call, enet_sync, connect_to_full_remote_host, [
                         LPort, RPort, ChannelCount
                     ]};
                 LPort =:= RPort ->
-                    {call, enet_core_sync, connect_to_self, [
+                    {call, enet_sync, connect_to_self, [
                         LPort, RPort, ChannelCount
                     ]};
                 true ->
-                    {call, enet_core_sync, connect, [LPort, RPort, ChannelCount]}
+                    {call, enet_sync, connect, [LPort, RPort, ChannelCount]}
             end
         end
     ).
 
 %%% Pre-conditions
 
-precondition(S, {call, enet_core_sync, stop_host, [Port]}) ->
+precondition(S, {call, enet_sync, stop_host, [Port]}) ->
     case get_host_with_port(S, Port) of
         false -> false;
         _Host -> true
@@ -144,7 +144,7 @@ precondition(S, {call, _, connect_to_full_remote_host, [LPort, RPort, _CC]}) ->
     end;
 precondition(_S, {call, _, connect_to_self, [LPort, RPort, _CC]}) ->
     LPort =:= RPort;
-precondition(S, {call, enet_core_sync, connect, [LPort, RPort, _ChannelCount]}) ->
+precondition(S, {call, enet_sync, connect, [LPort, RPort, _ChannelCount]}) ->
     LocalHost = get_host_with_port(S, LPort),
     RemoteHost = get_host_with_port(S, RPort),
     case {LocalHost, RemoteHost} of
@@ -160,8 +160,8 @@ precondition(_S, {call, _, _, _}) ->
 
 %%% State transitions
 
-next_state(S, V, {call, enet_core_sync, start_host, [_ConnectFun, Options]}) ->
-    HostPort = {call, enet_core_sync, get_host_port, [V]},
+next_state(S, V, {call, enet_sync, start_host, [_ConnectFun, Options]}) ->
+    HostPort = {call, enet_sync, get_host_port, [V]},
     {peer_limit, PeerLimit} = lists:keyfind(peer_limit, 1, Options),
     {channel_limit, ChannelLimit} = lists:keyfind(channel_limit, 1, Options),
     Host = #{
@@ -174,7 +174,7 @@ next_state(S, V, {call, enet_core_sync, start_host, [_ConnectFun, Options]}) ->
     S#state{
         hosts = [Host | S#state.hosts]
     };
-next_state(S, _V, {call, enet_core_sync, stop_host, [Port]}) ->
+next_state(S, _V, {call, enet_sync, stop_host, [Port]}) ->
     #state{hosts = Hosts} = S,
     {value, Host} = lists:search(fun(#{port := P}) -> P =:= Port end, Hosts),
     ConnectIDs = [CID || #peer{connect_id = CID} <- maps:get(peers, Host, [])],
@@ -208,11 +208,11 @@ next_state(S, V, {call, _, connect_to_self, [Port, Port, ChannelCount]}) ->
             %% Trying to connect to own host without room for two new peers
             S;
         Host = #{peer_count := PeerCount, peers := Peers} ->
-            PeerPid = {call, enet_core_sync, get_local_peer_pid, [V]},
-            Channels = {call, enet_core_sync, get_local_channels, [V]},
-            RemotePeerPid = {call, enet_core_sync, get_remote_peer_pid, [V]},
-            RemoteChannels = {call, enet_core_sync, get_remote_channels, [V]},
-            ConnectID = {call, 'Elixir.EnetCore.Peer', get_connect_id, [PeerPid]},
+            PeerPid = {call, enet_sync, get_local_peer_pid, [V]},
+            Channels = {call, enet_sync, get_local_channels, [V]},
+            RemotePeerPid = {call, enet_sync, get_remote_peer_pid, [V]},
+            RemoteChannels = {call, enet_sync, get_remote_channels, [V]},
+            ConnectID = {call, 'Elixir.Enet.Peer', get_connect_id, [PeerPid]},
             Peer1 = #peer{
                 connect_id = ConnectID,
                 pid = PeerPid,
@@ -233,16 +233,16 @@ next_state(S, V, {call, _, connect_to_self, [Port, Port, ChannelCount]}) ->
                 hosts = replace_host_with_same_port(NewHost, S#state.hosts)
             }
     end;
-next_state(S, V, {call, enet_core_sync, connect, [LPort, RPort, ChannelCount]}) ->
+next_state(S, V, {call, enet_sync, connect, [LPort, RPort, ChannelCount]}) ->
     H1 = get_host_with_port(S, LPort),
     H2 = get_host_with_port(S, RPort),
     case {H1, H2} of
         {H1, H2 = #{}} ->
-            PeerPid = {call, enet_core_sync, get_local_peer_pid, [V]},
-            Channels = {call, enet_core_sync, get_local_channels, [V]},
-            RemotePeerPid = {call, enet_core_sync, get_remote_peer_pid, [V]},
-            RemoteChannels = {call, enet_core_sync, get_remote_channels, [V]},
-            ConnectID = {call, 'Elixir.EnetCore.Peer', get_connect_id, [PeerPid]},
+            PeerPid = {call, enet_sync, get_local_peer_pid, [V]},
+            Channels = {call, enet_sync, get_local_channels, [V]},
+            RemotePeerPid = {call, enet_sync, get_remote_peer_pid, [V]},
+            RemoteChannels = {call, enet_sync, get_remote_channels, [V]},
+            ConnectID = {call, 'Elixir.Enet.Peer', get_connect_id, [PeerPid]},
             Peer1 = #peer{
                 connect_id = ConnectID,
                 pid = PeerPid,
@@ -269,7 +269,7 @@ next_state(S, V, {call, enet_core_sync, connect, [LPort, RPort, ChannelCount]}) 
                 hosts = Hosts2
             }
     end;
-next_state(S, _V, {call, enet_core_sync, disconnect, [LPid, _RPid]}) ->
+next_state(S, _V, {call, enet_sync, disconnect, [LPid, _RPid]}) ->
     [ConnectID] = [
         ConnectID
      || #{peers := Peers} <- S#state.hosts,
@@ -300,12 +300,12 @@ next_state(S, _V, {call, _, send_reliable, [_ChannelPid, _Data]}) ->
 
 %%% Post-conditions
 
-postcondition(_S, {call, enet_core_sync, start_host, [_ConnectFun, _Opts]}, Res) ->
+postcondition(_S, {call, enet_sync, start_host, [_ConnectFun, _Opts]}, Res) ->
     case Res of
         {error, _Reason} -> false;
         {ok, _Port} -> true
     end;
-postcondition(S, {call, enet_core_sync, stop_host, [Port]}, Res) ->
+postcondition(S, {call, enet_sync, stop_host, [Port]}, Res) ->
     case lists:any(fun(#{port := P}) -> P =:= Port end, S#state.hosts) of
         false -> Res =:= {error, not_found};
         true -> Res =:= ok
@@ -334,7 +334,7 @@ postcondition(S, {call, _, connect_to_self, [Port, Port, _C]}, Res) ->
                 {error, _Reason} -> false
             end
     end;
-postcondition(S, {call, enet_core_sync, connect, [LPort, RPort, _C]}, Res) ->
+postcondition(S, {call, enet_sync, connect, [LPort, RPort, _C]}, Res) ->
     H1 = get_host_with_port(S, LPort),
     H2 = get_host_with_port(S, RPort),
     case {H1, H2} of
@@ -346,7 +346,7 @@ postcondition(S, {call, enet_core_sync, connect, [LPort, RPort, _C]}, Res) ->
         {_H1, _H2} ->
             false
     end;
-postcondition(_S, {call, enet_core_sync, disconnect, [_LPeer, _RPeer]}, Res) ->
+postcondition(_S, {call, enet_sync, disconnect, [_LPeer, _RPeer]}, Res) ->
     Res =:= ok;
 postcondition(_S, {call, _, send_unsequenced, [_Channel, _Data]}, Res) ->
     Res =:= ok;
@@ -361,10 +361,10 @@ connect_fun() ->
     oneof([symbolic_connect_fun(), connect_mfa()]).
 
 symbolic_connect_fun() ->
-    {call, enet_core_model, mock_connect_fun, []}.
+    {call, enet_model, mock_connect_fun, []}.
 
 connect_mfa() ->
-    {enet_core_model, mock_start_worker, [{call, erlang, self, []}]}.
+    {enet_model, mock_start_worker, [{call, erlang, self, []}]}.
 
 mock_connect_fun() ->
     Self = self(),
@@ -408,7 +408,7 @@ channel_pid(#state{hosts = Hosts}) ->
             ?LET(
                 ID,
                 integer(0, Count - 1),
-                {call, enet_core_sync, get_channel, [ID, Channels]}
+                {call, enet_sync, get_channel, [ID, Channels]}
             )
         )
     ).

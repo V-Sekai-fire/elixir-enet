@@ -1,4 +1,4 @@
-defmodule EnetCore.Protocol do
+defmodule Enet.Protocol do
   @moduledoc """
   ENet protocol record definitions.
   Converted from enet_protocol.hrl.

@@ -1,14 +1,14 @@
-defmodule EnetCore.Sync do
+defmodule Enet.Sync do
   @moduledoc """
   Synchronous ENet operations for testing.
   Converted from enet_sync.erl.
   """
 
-  alias EnetCore
-  alias EnetCore.Peer
+  alias Enet
+  alias Enet.Peer
 
   def start_host(connect_fun, options) do
-    EnetCore.start_host(0, connect_fun, options)
+    Enet.start_host(0, connect_fun, options)
   end
 
   def connect_from_full_local_host(local_host, remote_port, channel_count) do
@@ -24,7 +24,7 @@ defmodule EnetCore.Sync do
   end
 
   def connect(local_host, remote_port, channel_count) do
-    case EnetCore.connect_peer(local_host, "127.0.0.1", remote_port, channel_count) do
+    case Enet.connect_peer(local_host, "127.0.0.1", remote_port, channel_count) do
       {:error, :reached_peer_limit} ->
         {:error, :reached_peer_limit}
 
@@ -54,7 +54,7 @@ defmodule EnetCore.Sync do
     l_name = Peer.get_name(l_pid)
     r_name = Peer.get_name(r_pid)
 
-    :ok = EnetCore.disconnect_peer(l_pid)
+    :ok = Enet.disconnect_peer(l_pid)
 
     receive do
       {:enet, :disconnected, :local, ^l_pid, connect_id} ->
@@ -86,7 +86,7 @@ defmodule EnetCore.Sync do
     [pid] = :gproc.select([{{{:p, :l, :port}, :"$1", port}, [], [:"$1"]}])
     ref = Process.monitor(pid)
 
-    :ok = EnetCore.stop_host(port)
+    :ok = Enet.stop_host(port)
 
     receive do
       {:DOWN, ^ref, :process, ^pid, :shutdown} ->
@@ -104,7 +104,7 @@ defmodule EnetCore.Sync do
   end
 
   def send_unsequenced(channel, data) do
-    EnetCore.send_unsequenced(channel, data)
+    Enet.send_unsequenced(channel, data)
 
     receive do
       {:enet, _id, ^data} -> :ok
@@ -114,7 +114,7 @@ defmodule EnetCore.Sync do
   end
 
   def send_unreliable(channel, data) do
-    EnetCore.send_unreliable(channel, data)
+    Enet.send_unreliable(channel, data)
 
     receive do
       {:enet, _id, ^data} -> :ok
@@ -124,7 +124,7 @@ defmodule EnetCore.Sync do
   end
 
   def send_reliable(channel, data) do
-    EnetCore.send_reliable(channel, data)
+    Enet.send_reliable(channel, data)
 
     receive do
       {:enet, _id, ^data} -> :ok

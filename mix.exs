@@ -1,9 +1,9 @@
-defmodule EnetCore.MixProject do
+defmodule Enet.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :enet_core,
+      app: :enet,
       version: "0.1.0",
       elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
@@ -21,7 +21,7 @@ defmodule EnetCore.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {EnetCore.Application, []}
+      mod: {Enet.Application, []}
     ]
   end
 

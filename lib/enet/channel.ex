@@ -1,4 +1,4 @@
-defmodule EnetCore.Channel do
+defmodule Enet.Channel do
   @moduledoc """
   ENet channel gen_server.
   Converted from enet_channel_srv.erl.
@@ -7,9 +7,9 @@ defmodule EnetCore.Channel do
   use GenServer
   require Logger
 
-  alias EnetCore.Command
-  alias EnetCore.Peer
-  alias EnetCore.Protocol
+  alias Enet.Command
+  alias Enet.Peer
+  alias Enet.Protocol
 
   @enet_max_seq_index 65_536
   @enet_peer_reliable_window_size 0x1000

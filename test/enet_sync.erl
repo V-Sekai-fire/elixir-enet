@@ -1,4 +1,4 @@
--module(enet_core_sync).
+-module(enet_sync).
 
 -export([
     start_host/2,
@@ -20,7 +20,7 @@
 ]).
 
 start_host(ConnectFun, Options) ->
-    'Elixir.EnetCore':start_host(0, ConnectFun, Options).
+    'Elixir.Enet':start_host(0, ConnectFun, Options).
 
 connect_from_full_local_host(LocalHost, RemotePort, ChannelCount) ->
     connect(LocalHost, RemotePort, ChannelCount).
@@ -32,7 +32,7 @@ connect_to_self(LocalHost, RemotePort, ChannelCount) ->
     connect(LocalHost, RemotePort, ChannelCount).
 
 connect(LocalHost, RemotePort, ChannelCount) ->
-    case 'Elixir.EnetCore':connect_peer(LocalHost, "127.0.0.1", RemotePort, ChannelCount) of
+    case 'Elixir.Enet':connect_peer(LocalHost, "127.0.0.1", RemotePort, ChannelCount) of
         {error, reached_peer_limit} ->
             {error, reached_peer_limit};
         {ok, LPeer} ->
@@ -45,8 +45,8 @@ connect(LocalHost, RemotePort, ChannelCount) ->
                         {error, remote_timeout}
                     end
             after 2000 ->
-                Pool = 'Elixir.EnetCore.Peer':get_pool(LPeer),
-                Name = 'Elixir.EnetCore.Peer':get_name(LPeer),
+                Pool = 'Elixir.Enet.Peer':get_pool(LPeer),
+                Name = 'Elixir.Enet.Peer':get_name(LPeer),
                 exit(LPeer, normal),
                 wait_until_worker_has_left_pool(Pool, Name),
                 {error, local_timeout}
@@ -54,11 +54,11 @@ connect(LocalHost, RemotePort, ChannelCount) ->
     end.
 
 disconnect(LPid, RPid) ->
-    LPool = 'Elixir.EnetCore.Peer':get_pool(LPid),
-    RPool = 'Elixir.EnetCore.Peer':get_pool(RPid),
-    LName = 'Elixir.EnetCore.Peer':get_name(LPid),
-    RName = 'Elixir.EnetCore.Peer':get_name(RPid),
-    ok = 'Elixir.EnetCore':disconnect_peer(LPid),
+    LPool = 'Elixir.Enet.Peer':get_pool(LPid),
+    RPool = 'Elixir.Enet.Peer':get_pool(RPid),
+    LName = 'Elixir.Enet.Peer':get_name(LPid),
+    RName = 'Elixir.Enet.Peer':get_name(RPid),
+    ok = 'Elixir.Enet':disconnect_peer(LPid),
     receive
         {enet, disconnected, local, LPid, ConnectID} ->
             receive
@@ -77,15 +77,15 @@ stop_host(Port) ->
         gproc:select([{{{p, l, remote_host_port}, '$1', Port}, [], ['$1']}]),
     PeerMonitors = lists:map(
         fun(Peer) ->
-            Pool = 'Elixir.EnetCore.Peer':get_pool(Peer),
-            Name = 'Elixir.EnetCore.Peer':get_name(Peer),
+            Pool = 'Elixir.Enet.Peer':get_pool(Peer),
+            Name = 'Elixir.Enet.Peer':get_name(Peer),
             {Peer, Pool, Name}
         end,
         RemoteConnectedPeers
     ),
     [Pid] = gproc:select([{{{p, l, port}, '$1', Port}, [], ['$1']}]),
     Ref = monitor(process, Pid),
-    ok = 'Elixir.EnetCore':stop_host(Port),
+    ok = 'Elixir.Enet':stop_host(Port),
     receive
         {'DOWN', Ref, process, Pid, shutdown} ->
             lists:foreach(
@@ -103,7 +103,7 @@ stop_host(Port) ->
     end.
 
 send_unsequenced(Channel, Data) ->
-    'Elixir.EnetCore':send_unsequenced(Channel, Data),
+    'Elixir.Enet':send_unsequenced(Channel, Data),
     receive
         {enet, _ID, Data} -> ok
     after 1000 ->
@@ -111,7 +111,7 @@ send_unsequenced(Channel, Data) ->
     end.
 
 send_unreliable(Channel, Data) ->
-    'Elixir.EnetCore':send_unreliable(Channel, Data),
+    'Elixir.Enet':send_unreliable(Channel, Data),
     receive
         {enet, _ID, Data} -> ok
     after 1000 ->
@@ -119,7 +119,7 @@ send_unreliable(Channel, Data) ->
     end.
 
 send_reliable(Channel, Data) ->
-    'Elixir.EnetCore':send_reliable(Channel, Data),
+    'Elixir.Enet':send_reliable(Channel, Data),
     receive
         {enet, _ID, Data} -> ok
     after 1000 ->

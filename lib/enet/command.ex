@@ -1,4 +1,4 @@
-defmodule EnetCore.Command do
+defmodule Enet.Command do
   @moduledoc """
   ENet command construction.
   Converted from enet_command.erl.
@@ -6,9 +6,9 @@ defmodule EnetCore.Command do
 
   import Bitwise
 
-  alias EnetCore.Commands
-  alias EnetCore.Constants
-  alias EnetCore.Protocol
+  alias Enet.Commands
+  alias Enet.Constants
+  alias Enet.Protocol
 
   @spec acknowledge(Protocol.CommandHeader.t(), integer()) ::
           {Protocol.CommandHeader.t(), Protocol.Acknowledge.t()}

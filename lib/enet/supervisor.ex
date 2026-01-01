@@ -1,4 +1,4 @@
-defmodule EnetCore.Supervisor do
+defmodule Enet.Supervisor do
   @moduledoc """
   ENet main supervisor.
   Converted from enet_sup.erl.
@@ -22,11 +22,11 @@ defmodule EnetCore.Supervisor do
   def start_host_supervisor(port, connect_fun, options) do
     child = %{
       id: port,
-      start: {EnetCore.HostSupervisor, :start_link, [port, connect_fun, options]},
+      start: {Enet.HostSupervisor, :start_link, [port, connect_fun, options]},
       restart: :temporary,
       shutdown: :infinity,
       type: :supervisor,
-      modules: [EnetCore.HostSupervisor]
+      modules: [Enet.HostSupervisor]
     }
 
     Supervisor.start_child(__MODULE__, child)
@@ -65,11 +65,11 @@ defmodule EnetCore.Supervisor do
     # EnetHost: host supervisor
     enet_host = %{
       id: {:enet_host_sup, host_id},
-      start: {EnetCore.HostSupervisor, :start_link, [host_id, connect_fun, options]},
+      start: {Enet.HostSupervisor, :start_link, [host_id, connect_fun, options]},
       restart: :temporary,
       shutdown: :infinity,
       type: :supervisor,
-      modules: [EnetCore.HostSupervisor]
+      modules: [Enet.HostSupervisor]
     }
 
     with {:ok, _} <- Supervisor.start_child(__MODULE__, listener),

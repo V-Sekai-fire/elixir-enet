@@ -1,4 +1,4 @@
-defmodule EnetCore.HostSupervisor do
+defmodule Enet.HostSupervisor do
   @moduledoc """
   ENet host supervisor.
   Converted from enet_host_sup.erl.
@@ -31,39 +31,39 @@ defmodule EnetCore.HostSupervisor do
       end
 
     pool = %{
-      id: EnetCore.Pool,
-      start: {EnetCore.Pool, :start_link, [host_id, peer_limit]},
+      id: Enet.Pool,
+      start: {Enet.Pool, :start_link, [host_id, peer_limit]},
       restart: :permanent,
       shutdown: 2000,
       type: :worker,
-      modules: [EnetCore.Pool]
+      modules: [Enet.Pool]
     }
 
     host = %{
-      id: EnetCore.Host,
-      start: {EnetCore.Host, :start_link, [host_id, connect_fun, options]},
+      id: Enet.Host,
+      start: {Enet.Host, :start_link, [host_id, connect_fun, options]},
       restart: :permanent,
       shutdown: 2000,
       type: :worker,
-      modules: [EnetCore.Host]
+      modules: [Enet.Host]
     }
 
     disconnector = %{
-      id: EnetCore.Disconnector,
-      start: {EnetCore.Disconnector, :start_link, [host_id]},
+      id: Enet.Disconnector,
+      start: {Enet.Disconnector, :start_link, [host_id]},
       restart: :permanent,
       shutdown: 1000,
       type: :worker,
-      modules: [EnetCore.Disconnector]
+      modules: [Enet.Disconnector]
     }
 
     peer_sup = %{
-      id: EnetCore.PeerSupervisor,
-      start: {EnetCore.PeerSupervisor, :start_link, [host_id]},
+      id: Enet.PeerSupervisor,
+      start: {Enet.PeerSupervisor, :start_link, [host_id]},
       restart: :permanent,
       shutdown: :infinity,
       type: :supervisor,
-      modules: [EnetCore.PeerSupervisor]
+      modules: [Enet.PeerSupervisor]
     }
 
     {:ok, {sup_flags, [pool, host, disconnector, peer_sup]}}

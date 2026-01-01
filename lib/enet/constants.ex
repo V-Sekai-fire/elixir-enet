@@ -1,4 +1,4 @@
-defmodule EnetCore.Constants do
+defmodule Enet.Constants do
   @moduledoc """
   ENet protocol constants.
   Converted from enet_constants.hrl.

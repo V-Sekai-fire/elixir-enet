@@ -1,4 +1,4 @@
-defmodule EnetCore do
+defmodule Enet do
   import Bitwise
 
   @moduledoc """
@@ -8,10 +8,10 @@ defmodule EnetCore do
 
   require Logger
 
-  alias EnetCore.Channel
-  alias EnetCore.Host
-  alias EnetCore.Peer
-  alias EnetCore.Supervisor
+  alias Enet.Channel
+  alias Enet.Host
+  alias Enet.Peer
+  alias Enet.Supervisor
 
   @type port_number :: 0..65_535
   @type mfargs :: {module(), atom(), [term()]}
@@ -121,7 +121,7 @@ defmodule EnetCore do
   ## Internal functions
 
   defp broadcast(host_port, channel_id, data, send_fun) do
-    peers = EnetCore.Pool.active_peers(host_port)
+    peers = Enet.Pool.active_peers(host_port)
 
     Enum.each(peers, fn {_name, peer} ->
       channel = Peer.channel(peer, channel_id)

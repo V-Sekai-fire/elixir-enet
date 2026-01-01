@@ -1,4 +1,4 @@
-defmodule EnetCore.Pool do
+defmodule Enet.Pool do
   @moduledoc """
   ENet peer pool management.
   Converted from enet_pool.erl.
