@@ -23,7 +23,7 @@ defmodule Enet.Protocol do
               checksum: nil
 
     def default_peer_id do
-      Constants.max_peer_id()
+      Enet.Constants.max_peer_id()
     end
   end
 
